@@ -5,54 +5,69 @@
     <% include ../partials/head %>
     <link rel="stylesheet" type="text/css"
           href="/css/home.css">
+    <script type="text/javascript"
+            src="/js/home.js">
+    </script>
 </head>
 <body>
 <% include ../partials/header %>
-<div class="homepage-wrapper">
-    <h1>My Diet Plan</h1>
+<div class="header-wrapper">
+    <h1 class="homepage-header">My Diet Plan</h1>
+
+    <!-- Facebook SDK -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2&appId=299255244104196&autoLogAppEvents=1">
+    </script>
+    <script>
+      let loginCheck = setInterval(function(){
+            console.log("trying");
+            if (FB != null)
+            {
+              FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                  console.log(response.authResponse.accessToken);
+                  $(".fb-login-button").replaceWith("<span class=\"facebook-text\">Connected</span>");
+                  addFacebookShareBtns();
+                }
+              });
+            }
+          }, 1000);
+    </script>
+
+    <!-- Account Info -->
+    <% if (locals.acc) { %>
+    <span class="account-info">
+        <div class="info-entry">
+            <span class="info-label">Weekly Budget: </span><span class="dark-green-bold">$<%-acc.WeeklyBudget%>.00</span>
+        </div>
+        <div class="info-entry">
+            <span class="info-label">Daily Recommended Calories: </span><span class="dark-green-bold"><%-acc.DailyCalories%></span>
+        </div>
+        <div class="homepage-subheader">Connect Accounts</div>
+        <div class="info-entry">
+            <span>Fitbit:  </span>
+            <% if (!!acc.FitBitConnected) { %>
+                <span class="fitbit-text">Connected</span>
+            <% } else { %>
+                <a class="fitbit-text" href="https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=22DK39&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2F&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=604800">Connect FitBit</a>
+            <% } %>
+        </div>
+        <div class="info-entry">
+            <span>Facebook:  </span>
+            <% if (!!acc.FacebookConnected) { %>
+                <span class="facebook-text">Connected</span>
+            <% } else { %>
+                <div class="fb-login-button" data-size="small" data-button-type="continue_with" data-auto-logout-link="false" data-use-continue-as="true" data-scope="email, user_likes, user_friends, user_posts"></div>
+            <% } %>
+        </div>
+
+    </span>
+    <% } %>
 </div>
 <div class="meals">
-    <% for (let i = 0; i < mealplan.length; i+=3) { %>
-    <h5 class="date-title"><%- dates[i / 3] %></h5>
-        <div class="meal-row">
-            <div class="meal-wrapper">
-                <div class="meal-holder">
-                    <img class="thumbnail" src="<%- mealplan[i].imagelink%>">
-                    <div class="meal-caption">
-                        <div class="meal-title"><%- mealplan[i].title %></div>
-                        <div class="meal-info">
-                            <div id="calories"><b>Calories:</b> <%- mealplan[i].calories %></div>
-                            <div id="cost"><b>Cost:</b> <%- mealplan[i].price %></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="meal-wrapper">
-                <div class="meal-holder">
-                    <img class="thumbnail" src="<%- mealplan[i+1].imagelink%>">
-                    <div class="meal-caption">
-                        <div class="meal-title"><%- mealplan[i+1].title %></div>
-                        <div class="meal-info">
-                            <div id="calories"><b>Calories:</b> <%- mealplan[i+1].calories %></div>
-                            <div id="cost"><b>Cost:</b> <%- mealplan[i+1].price %></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="meal-wrapper">
-                <div class="meal-holder">
-                    <img class="thumbnail" src="<%- mealplan[i+2].imagelink%>">
-                    <div class="meal-caption">
-                        <div class="meal-title"><%- mealplan[i+2].title %></div>
-                        <div class="meal-info">
-                            <div id="calories"><b>Calories:</b> <%- mealplan[i+2].calories %></div>
-                            <div id="cost"><b>Cost:</b> <%- mealplan[i+2].price %></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <% } %>
+</div>
+<input id="email" type="hidden" value="<%- email %>">
+<div id="dialog" title="">
 </div>
 </body>
 
